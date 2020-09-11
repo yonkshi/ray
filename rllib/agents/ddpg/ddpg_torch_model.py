@@ -90,7 +90,9 @@ class DDPGTorchModel(TorchModelV2, nn.Module):
         class _Lambda(nn.Module):
             def forward(self_, x):
                 sigmoid_out = nn.Sigmoid()(2.0 * x)
-                squashed = self.action_range * sigmoid_out + self.low_action
+                action_range = self.action_range.to(sigmoid_out.device)
+                low_action = self.low_action.to(sigmoid_out.device)
+                squashed = action_range * sigmoid_out + low_action
                 return squashed
 
         # Only squash if we have bounded actions.
